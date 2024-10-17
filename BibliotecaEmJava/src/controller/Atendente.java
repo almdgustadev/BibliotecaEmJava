@@ -3,6 +3,7 @@ package controller;
 import java.util.ArrayList;
 import java.util.Scanner;
 import model.*;
+import java.util.List;
 
 public class Atendente  {
 	Scanner input = new Scanner(System.in);
@@ -118,10 +119,6 @@ public class Atendente  {
             return;          
         }
 
-        if(livros.isEmpty()){
-            System.out.println("Não existe livros cadastrado!");
-        }
-
         mostrarLivroDisponiveis();
 
        
@@ -138,7 +135,8 @@ public class Atendente  {
         }
         
         if(livroSelecionado == null){
-            System.out.println("LIVRO NÃO ENCONTRADO!");
+            System.out.println("LIVRO NÃO ENCONTRADO! TENTE NOVAMENTE COM O ISBN CORRETO!");
+            return;
         }
 
         if (livroSelecionado.isEmprestado()) {
@@ -149,6 +147,7 @@ public class Atendente  {
         System.out.println("Informe a data de empréstimo: ");
         Data dataEmprestimo = Data.capturarData();
         livroSelecionado.setDataEmp(dataEmprestimo);
+
         
         input.nextLine();
 
@@ -174,6 +173,161 @@ public class Atendente  {
         livroSelecionado.setEmprestado(true);
         System.out.println("EMPRÉSTIMO REGISTRADO!");
     }
+    
+    public void registrarDevolucao() {
+    	if(verificarLivrosDisponiveis() || livros.isEmpty()) {
+    		System.out.println("NÃO EXISTEM LIVROS EMPRESTADOS!");
+    		return;
+    	}
+    	
+    	System.out.println("Digite o ISBN do livro que deseja devolver: ");
+        int isbn = input.nextInt();
+        
+        Livro livroSelecionado = null;
+        for(Livro livro: livros) {
+        	if(livro.getIsbn() == isbn) {
+        		livroSelecionado = livro;
+        		break;
+        	}
+        }
+        
+        if(livroSelecionado == null) {
+            System.out.println("O LIVRO NÃO FOI ENCONTRADO! TENTE NOVAMENTE COM O ISBN CORRETO!");
+           return;
+        }
+        
+        if(!livroSelecionado.isEmprestado()) {
+        	System.out.println("O livro já está disponível!");
+        	return;
+        }
+        
+        if(livroSelecionado.isEmprestado()) {
+        	Data dataDevolucao;
+        	
+        	System.out.println("Informe a data de devolução: ");
+            dataDevolucao = Data.capturarData();
+               
+            if (dataDevolucao.getAno() < livroSelecionado.getDataEmp().getAno()|| 
+            (dataDevolucao.getAno()== livroSelecionado.getDataEmp().getAno() && dataDevolucao.getMes() <  livroSelecionado.getDataEmp().getMes()) ||
+            (dataDevolucao.getAno()== livroSelecionado.getDataEmp().getAno() && dataDevolucao.getMes() == livroSelecionado.getDataEmp().getMes()) && 
+            dataDevolucao.getDia()<= livroSelecionado.getDataEmp().getDia()) {
+            	System.out.println("A DATA DE DEVOLUÇÃO DEVE SER POSTERIOR A DE EMPRÉSTIMO!");
+            	return;
+            } 
+            livroSelecionado.setEmprestado(false);
+            System.out.println("DEVOLUÇÃO REGISTRADA!");
 
+        }
+                               	
+    }
+
+
+
+    public void verificarDisponibilidadeLivro() {
+    	int opcao;
+    	int buscaNumero;
+    	String buscaNome;
+    	
+    	System.out.println("ESCOLHA A OPÇÃO DE BUSCA");
+    	System.out.println("1.Título");
+    	System.out.println("2.Autor");
+    	System.out.println("3.Isbn");
+    	System.out.println("4.Ano de publicação");
+    	opcao = input.nextInt();
+    	input.nextLine();//limpeza de buffer
+    	
+    	switch(opcao) {
+    	case 1:
+    		List<Livro> livrosPorTitulo = new ArrayList<>();
+    		if(!livros.isEmpty()) {
+    			System.out.println("Digite o título do livro: ");
+    			buscaNome = input.nextLine();
+    			for(Livro t : livros) {
+    				if(t.getTitulo().equalsIgnoreCase(buscaNome)){
+    					livrosPorTitulo.add(t);   					
+    				}
+    			}
+    		}
+    		for(Livro t : livrosPorTitulo) {
+    			if(!t.isEmprestado()) {
+    				System.out.println(livrosPorTitulo + " - DISPONÍVEL");
+    				break;
+    			}else {
+    				System.out.println(livrosPorTitulo + " - INDISPONÍVEL");
+    				break;
+    			}
+    		}
+    		break;
+    	case 2:
+    		List<Livro>livrosPorAutor = new ArrayList<>();
+    		if(!livros.isEmpty()) {
+    			System.out.println("Digite o autor do livro: ");
+    			buscaNome = input.nextLine();
+    			for(Livro a : livros) {
+    				if(a.getAutor().equalsIgnoreCase(buscaNome)) {
+    					livrosPorAutor.add(a);
+    				}
+    			}
+    		}
+    		for(Livro a : livros) {
+    			if(!a.isEmprestado()) {
+    				System.out.println(livrosPorAutor + " - DISPONÍVEL");
+    				break;
+    			} else {
+    				System.out.println(livrosPorAutor + " - INDISPONÍVEL");
+    				break;
+    			}
+    		}
+    		break;
+    	case 3:
+    		List<Livro>livrosPorISBN = new ArrayList<>();
+    		if(!livros.isEmpty()) {
+    			System.out.println("Digite o ISBN do livro: ");
+    			buscaNumero = input.nextInt();
+    			for(Livro i : livros) {
+    				if(i.getIsbn() == buscaNumero) {
+    					livrosPorISBN.add(i);
+    				}
+    			}
+    		}
+    		for(Livro i : livros) {
+    			if(!i.isEmprestado()) {
+    				System.out.println(livrosPorISBN + " - DISPONÍVEL");
+    				break;
+    			} else {
+    				System.out.println(livrosPorISBN + " - INDISPONÍVEL");
+    				}
+    			}    				
+    		break;
+    	case 4:
+    		List<Livro>livrosPorAnoPublicacao = new ArrayList<>();
+    		if(!livros.isEmpty()) {
+    			System.out.println("Digite o ano de publicaçao do livro: ");
+    			buscaNumero = input.nextInt();
+    			for(Livro ap : livros) {
+    				if(ap.getAnoPublicacao() == buscaNumero) {
+    					livrosPorAnoPublicacao.add(ap);
+    				}
+    			}
+    		}
+    		for(Livro ap : livros) {
+    			if(!ap.isEmprestado()) {
+    				System.out.println(livrosPorAnoPublicacao + " - DISPONÍVEL");
+    				break;
+    			} else {
+    				System.out.println(livrosPorAnoPublicacao + " - INDISPONÍVEL");
+    				}
+    			} 
+    		break;
+    	default:
+    		System.out.println("OPÇÃO INVÁLIDA. TENTE NOVAMENTE!");
+    		return;
+    		
+    	}
+    	
+    	
+    
+    
+    }
 
 }

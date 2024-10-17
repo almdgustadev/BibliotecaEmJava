@@ -14,16 +14,17 @@ public class SistemaBiblioteca extends Atendente {
 
         do{
             switch (n) {
-            case 1:
-            atendenteDiario.cadastrarLivro();
+            case 1:           	
+            	atendenteDiario.cadastrarLivro();
                 break;
             case 2:
-            atendenteDiario.registarEmprestimo();
-                
+            	atendenteDiario.registarEmprestimo();               
                 break;
             case 3:
+            	atendenteDiario.registrarDevolucao();
                 break;
             case 4:
+            	atendenteDiario.verificarDisponibilidadeLivro();
                 break;        
             default:
             System.out.println("FECHANDO SISTEMA...");
