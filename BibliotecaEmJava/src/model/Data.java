@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Data{
 
-    int dia, mes, ano;
+    private int dia, mes, ano;
 
 
     public Data(int dia, int mes, int ano) {
